@@ -1,0 +1,22 @@
+{
+  "name": "logging-pino-logtail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js",
+    "dev:debug": "PINO_LOG_LEVEL=trace npm run start | pino-pretty",
+    "dev:logtail": "LOGTAIL_DEV_ENABLED=true npm run start | pino-pretty"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "pino": "^8.4.1"
+  },
+  "devDependencies": {
+    "pino-http-send": "^0.4.2",
+    "pino-pretty": "^9.0.1"
+  }
+}
