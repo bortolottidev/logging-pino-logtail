@@ -18,28 +18,36 @@ const fileStreams = Object.keys(levels).map((level) => ({
     stream: pino.destination(`${loggingDirectory}/app-${level}.log`),
   }));
 
-let logtailStream;
+let logtailTransport;
 if(Boolean(process.env.LOGTAIL_DEV_ENABLED)) {
-  console.log({ msg: "[DEVELOPMENT] Logging to logtail..."})
-  // Don't use for production!
-  const { createWriteStream } = require('pino-http-send');
 
   if(!process.env.LOGTAIL_AUTH_TOKEN) {
     throw new Error("Logtail Auth Token Not Found!")
   }
-  logtailStream = createWriteStream({
-    url: 'https://in.logtail.com ',
-    method: 'POST',
-    bodyType: 'json',
-    headers: {"Authorization": `Bearer ${process.env.LOGTAIL_AUTH_TOKEN}`}
+
+  logtailTransport = pino.transport({
+        target: `${__dirname}/transport2.js`,
+        options: {
+          logtailToken: process.env.LOGTAIL_AUTH_TOKEN,
+          destination: `${loggingDirectory}/transport.log`
+        },
+        levels
+    /* pipeline: [
+      {
+        target: `${__dirname}/transport.js`,
+        options: {
+          logtailToken: process.env.LOGTAIL_AUTH_TOKEN,
+          destination: "./test.log"
+        },
+        levels
+      },
+      {
+        target: 'pino-pretty'
+      }
+    ] */
   });
+
 }
-
-const streams = [
-  { stream: process.stdout },
-  ...(logtailStream ? [logtailStream] : fileStreams)
-]
-
 
 module.exports = pino(
   {
@@ -47,11 +55,12 @@ module.exports = pino(
     customLevels: levels,
     useOnlyCustomLevels: false,
     formatters: {
-      level: (label) => {
-        const upperLabel = label.toUpperCase()
-        return { level: upperLabel };
+      level: (label, level) => {
+        const severity = label.toUpperCase();
+        return { level, severity }
       },
     },
   },
-  pino.multistream(streams, { levels, dedupe: true }),
+  logtailTransport
+  //pino.multistream(streams, { levels, dedupe: true }),
 );

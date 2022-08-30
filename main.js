@@ -1,10 +1,42 @@
 require("dotenv").config();
 const logger = require("./logger.js");
+/*
+const Stream = require('stream');
+
+// const readableStream = new Stream.Readable({
+//   read() {},
+// });
+const writableStream = new Stream.Writable();
+const { Logtail } = require("@logtail/node");
+const logtail = new Logtail(process.env.LOGTAIL_AUTH_TOKEN)
+
+writableStream._write = async (chunk, encoding, next) => {
+  console.log("CHUNKINGGGG: " + chunk)
+  await logtail.info(chunk.toString());
+  next();
+};
+
+/* readableStream.pipe(writableStream);
+
+readableStream.push('hi!');
+readableStream.push('ho!'); */
+
+// readableStream.on('close', () => writableStream.end());
+/* writableStream.on('close', () => console.log('ended'));
+writableStream.destroy() */
+
+// readableStream.destroy(); */
+
+/* (async () => {
+  for(let i = 0; i < 15; i++) {
+    await logger.info(`hey! ${i}!\n`);
+  }
+})().then(() => console.log("OK")); */
+// return;
 
 logger.info('test log!');
 logger.info("Hello from Pino!");
 
-logger.fatal("Just another log");
 logger.error("Just another log");
 logger.warn("Just another log");
 logger.info("Just another log");
@@ -47,3 +79,4 @@ const childLogger = logger.child({
 childLogger.info('Child log 1');
 childLogger.info('Child log 2');
 
+logger.fatal("The fatal log will flush all!")
