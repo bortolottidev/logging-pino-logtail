@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node main.js",
+    "start": "node --experimental-fetch main.js",
+    "dev": "npm run start | pino-pretty",
     "dev:debug": "PINO_LOG_LEVEL=trace npm run start | pino-pretty",
     "dev:logtail": "LOGTAIL_DEV_ENABLED=true npm run start | pino-pretty"
   },
@@ -12,13 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@logtail/node": "^0.1.12",
     "dotenv": "^16.0.1",
     "pino": "^8.4.1",
     "pino-abstract-transport": "^1.0.0"
   },
   "devDependencies": {
-    "pino-http-send": "^0.4.2",
     "pino-pretty": "^9.0.1"
   }
 }

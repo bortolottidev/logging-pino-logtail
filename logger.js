@@ -14,11 +14,17 @@ const levels = {
 
 // In this case, only my custom levels will be logged on file
 const fileStreams = Object.keys(levels).map((level) => ({
-    level,
-    stream: pino.destination(`${loggingDirectory}/app-${level}.log`),
-  }));
+  level,
+  stream: pino.destination(`${loggingDirectory}/app-${level}.log`),
+}));
 
 let logtailTransport;
+
+const stdoutTransport = pino.transport({
+  target: 'pino/file',
+  options: { destination: 1 },
+});
+
 if(Boolean(process.env.LOGTAIL_DEV_ENABLED)) {
 
   if(!process.env.LOGTAIL_AUTH_TOKEN) {
@@ -26,27 +32,14 @@ if(Boolean(process.env.LOGTAIL_DEV_ENABLED)) {
   }
 
   logtailTransport = pino.transport({
-        target: `${__dirname}/transport2.js`,
-        options: {
-          logtailToken: process.env.LOGTAIL_AUTH_TOKEN,
-          destination: `${loggingDirectory}/transport.log`
-        },
-        levels
-    /* pipeline: [
-      {
-        target: `${__dirname}/transport.js`,
-        options: {
-          logtailToken: process.env.LOGTAIL_AUTH_TOKEN,
-          destination: "./test.log"
-        },
-        levels
-      },
-      {
-        target: 'pino-pretty'
-      }
-    ] */
+    target: `${__dirname}/transport.js`,
+    options: {
+      debug: true,
+      logtailToken: process.env.LOGTAIL_AUTH_TOKEN,
+      destination: `${loggingDirectory}/transport.log`
+    },
+    levels
   });
-
 }
 
 module.exports = pino(
@@ -61,6 +54,8 @@ module.exports = pino(
       },
     },
   },
-  logtailTransport
-  //pino.multistream(streams, { levels, dedupe: true }),
+  pino.multistream([
+    stdoutTransport,
+    logtailTransport
+  ])
 );

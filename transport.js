@@ -1,47 +1,82 @@
 const build = require('pino-abstract-transport')
-const { once } = require( 'events')
-const fs = require("fs")
 
-const { Logtail } = require("@logtail/node");
+function defaultParseLine (line) {
+  const obj = JSON.parse(line)
+  obj.logId = Math.floor(Math.random() * 100000)
 
-const Stream = require('stream');
+  return obj
+}
 
-module.exports = async function (opts) {
-  // SonicBoom is necessary to avoid loops with the main thread.
-  // It is the same of pino.destination().
-  const destination = fs.createWriteStream(opts.destination);
-  await once(destination, 'ready')
-  
-  const logtail = new Logtail(opts.logtailToken);
-  const writableStream = new Stream.Writable();
+module.exports = async function (options) {
 
-  writableStream._write = (chunk, encoding, next) => {
-    const toDrain = !destination.write(JSON.stringify(chunk) + "\n")
-    // await logtail.info(chunk.toString());
-    next();
-  };
+  let batchDataToSend = [];
+  let autoFlushTimeout;
+
+  const debugLog = (msg) => {
+    if (!options.debug) {
+      return;
+    }
+
+    process._rawDebug(msg);
+  }
+
+  const sendLogsToLogtail = () => {
+    const body = JSON.stringify(batchDataToSend);
+    batchDataToSend = [];
+
+    debugLog("Sending: " + body);
+    return fetch('https://in.logtail.com', {
+      body, 
+      method: 'POST', 
+      headers: { 
+        ['content-type']: 'application/json',
+        ['authorization']: `Bearer ${options.logtailToken}`,
+      },
+    });
+  }
+
+  const send = async (log) => {
+    batchDataToSend.push(log);
+
+    // If set, reset flush timeout, we're already trying to send
+    if (autoFlushTimeout) {
+      clearTimeout(autoFlushTimeout);
+    }
+
+    if (batchDataToSend.length >= 10) {
+      debugLog("Time to send: " + batchDataToSend.length);
+      return sendLogsToLogtail();
+    }
+
+    autoFlushTimeout = setTimeout(() => {
+      debugLog("Flushing after 1 sec from last send...");
+      if (batchDataToSend.length === 0) return;
+
+      const noOp = () => {};
+      sendLogsToLogtail().then(noOp);
+    }, 1000);
+
+    debugLog("Not time to send: " + batchDataToSend.length);
+    return;
+  }
+
+  const parseLine = typeof options.parseLine === 'function' ? options.parseLine : defaultParseLine;
 
   return build(async function (source) {
     for await (let obj of source) {
-      await writableStream.write(obj);
-      // This block will handle backpressure
-      // await logtail.warn("porco schifo" + Math.random());
-      /* if (toDrain) {
-        await once(destination, 'drain')
-      } */
+      await send(obj)
     }
-   }, {
-    async close (err) {
-      writableStream.on('close', () => console.log('ended'));
-      writableStream.destroy()
-  /*    if(err) {
-        destination.write("ERROR:" + JSON.stringify(err) + "\n")
+  }, {
+    parseLine,
+
+    // Handle transport shutdown
+    close(err, cb) {
+      if(err) {
+        debugLog("Error during the write: " + err);
+        cb();
       }
-      destination.end()
-      // logtail.end()
-      await once(destination, 'close')
-      // await once(logtail, 'close')
-    } */
+      debugLog("Forcing flush before close");
+      sendLogsToLogtail().then(cb);
     }
   })
 }
