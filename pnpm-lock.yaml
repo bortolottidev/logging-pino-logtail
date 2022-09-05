@@ -1,18 +1,18 @@
 lockfileVersion: 5.3
 
 specifiers:
-  dotenv: ^16.0.1
-  pino: ^8.4.1
-  pino-abstract-transport: ^1.0.0
-  pino-pretty: ^9.0.1
+  dotenv: ^16.0.2
+  pino: ^8.5.0
+  pino-logtail-transport: ^0.1.1
+  pino-pretty: ^9.1.0
 
 dependencies:
-  dotenv: 16.0.1
-  pino: 8.4.1
-  pino-abstract-transport: 1.0.0
+  dotenv: 16.0.2
+  pino: 8.5.0
+  pino-logtail-transport: 0.1.1
 
 devDependencies:
-  pino-pretty: 9.0.1
+  pino-pretty: 9.1.0
 
 packages:
 
@@ -44,8 +44,8 @@ packages:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
     dev: true
 
-  /dotenv/16.0.1:
-    resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
+  /dotenv/16.0.2:
+    resolution: {integrity: sha512-JvpYKUmzQhYoIFgK2MOnF3bciIZoItIIoryihy0rIA+H4Jy0FmgyKYAHCTN98P5ybGSJcIFbh6QKeJdtZd1qhA==}
     engines: {node: '>=12'}
     dev: false
 
@@ -63,8 +63,8 @@ packages:
     resolution: {integrity: sha512-LDzYKNTHhD+XOp8wGMuCkY4eTxFZOOycmpwLBiuF3r3OjOmZnURRD8t2dUAbmKuXGbo/MGggwbSjcBdp8QT0+g==}
     dev: true
 
-  /fast-redact/3.1.1:
-    resolution: {integrity: sha512-odVmjC8x8jNeMZ3C+rPMESzXVSEU8tSWSHv9HFxP2mm89G/1WwqhrerJDQm9Zus8X6aoRgQDThKqptdNA6bt+A==}
+  /fast-redact/3.1.2:
+    resolution: {integrity: sha512-+0em+Iya9fKGfEQGcd62Yv6onjBmmhV1uh86XVfOU8VwAe6kaFdQCWI9s0/Nnugx5Vd9tdbZ7e6gE2tR9dzXdw==}
     engines: {node: '>=6'}
     dev: false
 
@@ -136,8 +136,15 @@ packages:
       readable-stream: 4.1.0
       split2: 4.1.0
 
-  /pino-pretty/9.0.1:
-    resolution: {integrity: sha512-5gFIIeDu1niFlL0pBACerwDR8Ts+i4gO0W9S0jRoHVvaQluvGOW4cUaDmC+/dSTCoG4VqfOQhP0dwuDLd0qJ6A==}
+  /pino-logtail-transport/0.1.1:
+    resolution: {integrity: sha512-ScUJnFFokzbNHOU1QKubBsl5OdaX7o/D+qgz05pHAkgGmIdn/LAKqGCBEw3vmX7HW2RbjCRkNrKw9nlwYyoX6g==}
+    dependencies:
+      pino-abstract-transport: 1.0.0
+      undici: 5.10.0
+    dev: false
+
+  /pino-pretty/9.1.0:
+    resolution: {integrity: sha512-IM6NY9LLo/dVgY7/prJhCh4rAJukafdt0ibxeNOWc2fxKMyTk90SOB9Ao2HfbtShT9QPeP0ePpJktksMhSQMYA==}
     hasBin: true
     dependencies:
       colorette: 2.0.19
@@ -160,12 +167,12 @@ packages:
     resolution: {integrity: sha512-mMMOwSKrmyl+Y12Ri2xhH1lbzQxwwpuru9VjyJpgFIH4asSj88F2csdMwN6+M5g1Ll4rmsYghHLQJw81tgZ7LQ==}
     dev: false
 
-  /pino/8.4.1:
-    resolution: {integrity: sha512-rZnbTUNFiYBH1H2OfYYVNBEFRDhN2nRaEmBD2+MDmGXSGyps+YPJ55LzWZP90zg7zyWKy0ZMqGlk47AO6OaBqQ==}
+  /pino/8.5.0:
+    resolution: {integrity: sha512-PuD6sOti8Y+p9zRoNB5dibmfjfM/OU2tEtJFICxw5ulXi1d0qnq/Rt3CsR6aBEAOeyCXP+ZUfiNWW+tt55pNzg==}
     hasBin: true
     dependencies:
       atomic-sleep: 1.0.0
-      fast-redact: 3.1.1
+      fast-redact: 3.1.2
       on-exit-leak-free: 2.1.0
       pino-abstract-transport: 1.0.0
       pino-std-serializers: 6.0.0
@@ -174,7 +181,7 @@ packages:
       real-require: 0.2.0
       safe-stable-stringify: 2.3.1
       sonic-boom: 3.2.0
-      thread-stream: 2.0.1
+      thread-stream: 2.1.0
     dev: false
 
   /process-warning/2.0.0:
@@ -245,10 +252,15 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /thread-stream/2.0.1:
-    resolution: {integrity: sha512-X7vWOdsHLkBq0si20ruEE2ttpS7WOVyD52xKu+TOjrRP9Qi9uB9ynHYpzZUbBptArBSuKYUn4mH+jEBnO2CRGg==}
+  /thread-stream/2.1.0:
+    resolution: {integrity: sha512-5+Pf2Ya31CsZyIPYYkhINzdTZ3guL+jHq7D8lkBybgGcSQIKDbid3NJku3SpCKeE/gACWAccDA/rH2B6doC5aA==}
     dependencies:
       real-require: 0.2.0
+    dev: false
+
+  /undici/5.10.0:
+    resolution: {integrity: sha512-c8HsD3IbwmjjbLvoZuRI26TZic+TSEe8FPMLLOkN1AfYRhdjnKBU6yL+IwcSCbdZiX4e5t0lfMDLDCqj4Sq70g==}
+    engines: {node: '>=12.18'}
     dev: false
 
   /util-deprecate/1.0.2:

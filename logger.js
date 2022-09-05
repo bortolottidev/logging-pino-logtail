@@ -32,13 +32,11 @@ if(Boolean(process.env.LOGTAIL_DEV_ENABLED)) {
   }
 
   logtailTransport = pino.transport({
-    target: `${__dirname}/transport.js`,
+    target: 'pino-logtail-transport',
     options: {
       debug: true,
       logtailToken: process.env.LOGTAIL_AUTH_TOKEN,
-      destination: `${loggingDirectory}/transport.log`
     },
-    levels
   });
 }
 
