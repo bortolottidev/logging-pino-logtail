@@ -1,10 +1,15 @@
 const build = require('pino-abstract-transport')
 
 function defaultParseLine (line) {
-  const obj = JSON.parse(line)
-  obj.logId = Math.floor(Math.random() * 100000)
+  const obj = JSON.parse(line);
+  const d = new Date();
 
-  return obj
+  return {
+    ...obj,
+    logId: Math.floor(Math.random() * 100000),
+    time: d.getTime(),
+    dt: d.toISOString(),
+  };
 }
 
 module.exports = async function (options) {
@@ -25,6 +30,7 @@ module.exports = async function (options) {
     batchDataToSend = [];
 
     debugLog("Sending: " + body);
+
     return fetch('https://in.logtail.com', {
       body, 
       method: 'POST', 
@@ -33,6 +39,7 @@ module.exports = async function (options) {
         ['authorization']: `Bearer ${options.logtailToken}`,
       },
     });
+
   }
 
   const send = async (log) => {
